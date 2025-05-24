@@ -1,5 +1,8 @@
 name: 
 
+env: 
+  REACT_APP_MOVIE_API_URL: http://localhost:5000
+
 on:
   workflow_dispatch:
   
@@ -53,5 +56,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name:
+        run: |
+          docker build --build-arg=${{ env.REACT_APP_MOVIE_API_URL' }} --tag=mp-frontend:latest . \
+          docker run --name mp-frontend -p 3000:3000 -d mp-frontend]
+
 
 
