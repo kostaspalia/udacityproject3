@@ -53,9 +53,6 @@ jobs:
   stage_deploy:
     runs-on: ubuntu-latest
     needs: [lint, test]
-    needs: build
-    environment:
-      name: staging
 
     steps:
       # Simulate a Deployment
