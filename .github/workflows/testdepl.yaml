@@ -50,7 +50,7 @@ jobs:
       - name: Build and push to ECR
         uses: docker/build-push-action@v4
         with:
-          context: ./starter/frontend
+          context: starter/frontend
           push: true
           tags: 961247951538.dkr.ecr.us-east-1.amazonaws.com/frontend/frontend:latest
           build-args: |
