@@ -55,7 +55,7 @@ jobs:
         with:
           context: starter/frontend
           push: true
-          tags: 961247951538.dkr.ecr.us-east-1.amazonaws.com/frontend/frontend:latest
+          tags: 961247951538.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
           build-args: |
             REACT_APP_MOVIE_API_URL=${{ secrets.REACT_APP_MOVIE_API_URL }}
       
