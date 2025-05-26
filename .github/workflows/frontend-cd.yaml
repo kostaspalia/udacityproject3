@@ -50,22 +50,9 @@ jobs:
       - name: Run test
         run: cd starter/frontend && CI=true npm test
 
-
-  build:
-    runs-on: ubuntu-latest
-    needs: [lint, test]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name:
-        run: |
-          cd starter/frontend && \
-          docker build --build-arg=${{ env.REACT_APP_MOVIE_API_URL }} --tag=mp-frontend:latest . && \
-          docker run --name mp-frontend -p 3000:3000 -d mp-frontend  
-
   stage_deploy:
     runs-on: ubuntu-latest
+    needs: [lint, test]
     needs: build
     environment:
       name: staging
@@ -80,12 +67,21 @@ jobs:
           #aws-session-token: ${{secrets.AWS_SESSION_TOKEN}}
           aws-region: us-east-1
 
-      - name: Build and push Docker image
+      - name: Login to Amazon 
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build and push to ECR
         uses: docker/build-push-action@v4
         with:
-          context: starter/frontend/.
+          context: starter/frontend
           push: true
-          tags: 961247951538.dkr.ecr.us-east-1.amazonaws.com/mp-frontend:latest
+          tags: 961247951538.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+          build-args: |
+            REACT_APP_MOVIE_API_URL=${{ secrets.REACT_APP_MOVIE_API_URL }}
       
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
@@ -93,9 +89,11 @@ jobs:
           version: 'latest'
 
       - name: Deploy to Kubernetes
+        working-directory: starter/frontend/k8s
         run: |
-          echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
-          kubectl apply -f deployment.yml --kubeconfig=kubeconfig.yaml
+          aws eks update-kubeconfig --name cluster --region us-east-1
+          kustomize edit set image frontend=961247951538.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+          kustomize build | kubectl apply -f -
 
 
 
