@@ -1,7 +1,7 @@
 name: Frontend Continuous Deployment
 
 env: 
-  REACT_APP_MOVIE_API_URL: ""
+  REACT_APP_MOVIE_API_URL: "a34d70c194b684f9a8242045ad9d3564-1625044360.us-east-1.elb.amazonaws.com/movies"
 
 on:
   workflow_dispatch:
@@ -69,13 +69,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: getURL
-        run: |
-          BACKEND_HOSTNAME=$(kubectl get svc backend -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          echo "backend_url=http://${BACKEND_HOSTNAME}" >> $GITHUB_OUTPUT
-          echo "REACT_APP_MOVIE_API_URL=http://${BACKEND_HOSTNAME}" >> $GITHUB_ENV  
+        uses: actions/checkout@v3  
 
       - name: Build and push to ECR
         uses: docker/build-push-action@v4
