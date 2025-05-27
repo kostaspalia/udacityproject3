@@ -1,7 +1,7 @@
 name: Frontend Continuous Deployment
 
 env: 
-  REACT_APP_MOVIE_API_URL: http://localhost:5000
+  REACT_APP_MOVIE_API_URL: ""
 
 on:
   workflow_dispatch:
@@ -70,6 +70,12 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: getURL
+        run: |
+          BACKEND_HOSTNAME=$(kubectl get svc backend -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          echo "backend_url=http://${BACKEND_HOSTNAME}" >> $GITHUB_OUTPUT
+          echo "REACT_APP_MOVIE_API_URL=http://${BACKEND_HOSTNAME}" >> $GITHUB_ENV  
 
       - name: Build and push to ECR
         uses: docker/build-push-action@v4
