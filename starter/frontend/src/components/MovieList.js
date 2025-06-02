@@ -7,7 +7,7 @@ function MovieList({ onMovieClick }) {
 
   useEffect(() => {
     axios
-      .get('http://a3a9cc3abbafc4037aeace3ef9c80c16-1726084954.us-east-1.elb.amazonaws.com/movies')
+      .get(`${process.env.REACT_APP_MOVIE_API_URL}/movies`)
       .then((response) => {
         setMovies(response.data.movies);
       });
