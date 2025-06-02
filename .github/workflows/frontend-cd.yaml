@@ -71,14 +71,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3  
 
-      - name: Build and push to ECR
-        uses: docker/build-push-action@v4
-        with:
-          context: starter/frontend
-          push: true
-          tags: 961247951538.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
-          build-args: |
-            REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }}
+      - name: Build and Push Docker Image
+        working-directory: starter/frontend
+        env:
+          IMAGE_TAG: latest
+          REPO_NAME: frontend
+        run: |
+          docker build --build-arg=REACT_APP_MOVIE_API_URL=http://a3a9cc3abbafc4037aeace3ef9c80c16-1726084954.us-east-1.elb.amazonaws.com/movies --tag 961247951538.dkr.ecr.us-east-1.amazonaws.com/frontend:latest .
+          docker push 961247951538.dkr.ecr.us-east-1.amazonaws.com/frontend:latest  
+
+      #
       
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
